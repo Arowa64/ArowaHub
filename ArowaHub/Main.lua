@@ -1,4 +1,4 @@
-local RawURL = "https://raw.githubusercontent.com/KULLANICI_ADI/ArowaHub/main/" -- GitHub Repo Raw Linkin
+local RawURL = "https://raw.githubusercontent.com/Arowa64/ArowaHub/main/ArowaHub/"
 
 local Players = game:GetService("Players")
 local LocalizationService = game:GetService("LocalizationService")
