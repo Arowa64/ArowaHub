@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Arowa Hub - Key Alma Ekranı</title>
+    <title>Arowa Hub - Key Ekranı</title>
     <style>
         body { background: #0f1117; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .card { background: #1a1d26; padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 350px; }
@@ -15,7 +15,7 @@
 <body>
     <div class="card">
         <h2>Arowa Hub Key</h2>
-        <p>Görevi başarıyla tamamladın! 24 saatlik kişisel anahtarın:</p>
+        <p>Görevi tamamladın! 24 saatlik kişisel anahtarın:</p>
         <div class="key-box" id="keyDisplay">Hesaplanıyor...</div>
         <button onclick="copyKey()">Key'i Kopyala</button>
     </div>
@@ -24,7 +24,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('uid') || "0";
         
-        // Roblox Lua algoritması ile birebir aynı key'i tarayıcıda üretiyoruz
         function generateUserKey(uid) {
             const currentDay = Math.floor(Date.now() / 1000 / 86400);
             const secretSalt = "AROWA_SALT_" + uid + "_" + currentDay;
@@ -46,7 +45,7 @@
 
         function copyKey() {
             navigator.clipboard.writeText(userKey);
-            alert("Key panoya kopyalandı!");
+            alert("Key kopyalandı!");
         }
     </script>
 </body>
