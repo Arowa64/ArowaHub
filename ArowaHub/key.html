@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Arowa Hub - Key Alma Ekranı</title>
+    <style>
+        body { background: #0f1117; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1a1d26; padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 350px; }
+        h2 { color: #5865f2; margin-bottom: 10px; }
+        .key-box { background: #282c37; padding: 12px; border-radius: 6px; font-size: 18px; font-weight: bold; letter-spacing: 2px; color: #00ff88; margin: 20px 0; border: 1px dashed #00ff88; word-break: break-all; }
+        button { background: #5865f2; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        button:hover { background: #4752c4; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Arowa Hub Key</h2>
+        <p>Görevi başarıyla tamamladın! 24 saatlik kişisel anahtarın:</p>
+        <div class="key-box" id="keyDisplay">Hesaplanıyor...</div>
+        <button onclick="copyKey()">Key'i Kopyala</button>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('uid') || "0";
+        
+        // Roblox Lua algoritması ile birebir aynı key'i tarayıcıda üretiyoruz
+        function generateUserKey(uid) {
+            const currentDay = Math.floor(Date.now() / 1000 / 86400);
+            const secretSalt = "AROWA_SALT_" + uid + "_" + currentDay;
+            
+            let h1 = 0, h2 = 0;
+            for (let i = 0; i < secretSalt.length; i++) {
+                let char = secretSalt.charCodeAt(i);
+                h1 = (h1 * 31 + char) % 1000000;
+                h2 = (h2 * 37 + char) % 1000000;
+            }
+            
+            const p1 = h1.toString(16).toUpperCase().padStart(5, '0');
+            const p2 = h2.toString(16).toUpperCase().padStart(5, '0');
+            return `AROWA-${p1}-${p2}`;
+        }
+
+        const userKey = generateUserKey(userId);
+        document.getElementById('keyDisplay').innerText = userKey;
+
+        function copyKey() {
+            navigator.clipboard.writeText(userKey);
+            alert("Key panoya kopyalandı!");
+        }
+    </script>
+</body>
+</html>
