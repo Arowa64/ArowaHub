@@ -8,11 +8,11 @@ local LocalPlayer = Players.LocalPlayer
 local playerLocale = LocalizationService.RobloxLocaleId:lower()
 local isTurkish = string.find(playerLocale, "tr") ~= nil
 
--- LootLabs Linkin
-local UserPersonalUrl = "https://lootdest.org/s?F1PcGPsi"
+-- Yeni LootLabs Linkin
+local UserPersonalUrl = "https://loot-link.com/s?z9sNoHrz"
 
 -- SABİT KEY
-local SABIT_KEY = "123" -- İstediğin key'i buraya yazabilirsin
+local SABIT_KEY = "123"
 
 -- UI Motorunu Yükle
 local ArowaUI = loadstring(game:HttpGet(RawURL .. "Core/ArowaUI.lua"))()
@@ -20,7 +20,7 @@ local ArowaUI = loadstring(game:HttpGet(RawURL .. "Core/ArowaUI.lua"))()
 -- Key Doğrulama Servisi
 local function VerifyKey(userKeyInput, callback)
     task.spawn(function()
-        local formattedInput = string.upper(string.gsub(userKeyInput or "", "%s+", ""))
+        local formattedInput = string.gsub(userKeyInput or "", "%s+", "")
         
         if formattedInput == SABIT_KEY then
             local successMsg = isTurkish and "Key Başarıyla Doğrulandı!" or "Key Successfully Verified!"
