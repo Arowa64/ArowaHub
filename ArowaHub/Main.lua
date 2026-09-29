@@ -12,7 +12,7 @@ local isTurkish = string.find(playerLocale, "tr") ~= nil
 local UserPersonalUrl = "https://lootdest.org/s?F1PcGPsi"
 
 -- SABİT KEY
-local SABIT_KEY = "AROWAHUB2026" -- İstediğin key'i buraya yazabilirsin
+local SABIT_KEY = "123" -- İstediğin key'i buraya yazabilirsin
 
 -- UI Motorunu Yükle
 local ArowaUI = loadstring(game:HttpGet(RawURL .. "Core/ArowaUI.lua"))()
