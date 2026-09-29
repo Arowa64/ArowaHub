@@ -38,6 +38,7 @@ local function makeDraggable(frame, handle)
     end)
 end
 
+-- 1. Dönen Spinner'lı Yükleme Ekranı
 function ArowaUI:ShowLoading(titleText, callback)
     local sg = Instance.new("ScreenGui")
     sg.Name = "ArowaLoadingUI"
@@ -100,6 +101,7 @@ function ArowaUI:ShowLoading(titleText, callback)
     if callback then callback() end
 end
 
+-- 2. Key Ekranı
 function ArowaUI:CreateKeyWindow(title, lootUrl, onVerify)
     local sg = Instance.new("ScreenGui")
     sg.Name = "ArowaKeyUI"
@@ -193,6 +195,7 @@ function ArowaUI:CreateKeyWindow(title, lootUrl, onVerify)
     end)
 end
 
+-- 3. Modern VexonHub Ana Menü Motoru
 function ArowaUI:CreateWindow(hubTitle, gameTitle)
     local Window = {}
     local sg = Instance.new("ScreenGui")
@@ -201,8 +204,8 @@ function ArowaUI:CreateWindow(hubTitle, gameTitle)
     sg.ResetOnSpawn = false
 
     local mainFrame = Instance.new("Frame")
-    mainFrame.Size = UDim2.new(0, 620, 0, 380)
-    mainFrame.Position = UDim2.new(0.5, -310, 0.5, -190)
+    mainFrame.Size = UDim2.new(0, 640, 0, 400)
+    mainFrame.Position = UDim2.new(0.5, -320, 0.5, -200)
     mainFrame.BackgroundColor3 = Color3.fromRGB(18, 20, 26)
     mainFrame.Parent = sg
     Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 12)
@@ -210,7 +213,7 @@ function ArowaUI:CreateWindow(hubTitle, gameTitle)
 
     -- Sol Sidebar
     local sidebar = Instance.new("Frame")
-    sidebar.Size = UDim2.new(0, 170, 1, 0)
+    sidebar.Size = UDim2.new(0, 180, 1, 0)
     sidebar.BackgroundColor3 = Color3.fromRGB(14, 15, 20)
     sidebar.Parent = mainFrame
     Instance.new("UICorner", sidebar).CornerRadius = UDim.new(0, 12)
@@ -232,17 +235,17 @@ function ArowaUI:CreateWindow(hubTitle, gameTitle)
     subText.Size = UDim2.new(1, -20, 0, 15)
     subText.Position = UDim2.new(0, 15, 0, 38)
     subText.BackgroundTransparency = 1
-    subText.Text = gameTitle or "Universal"
+    subText.Text = gameTitle or "Universal Mode"
     subText.TextColor3 = Color3.fromRGB(120, 125, 140)
     subText.TextSize = 11
     subText.Font = Enum.Font.Gotham
     subText.TextXAlignment = Enum.TextXAlignment.Left
     subText.Parent = sidebar
 
-    -- Sekmeler Listesi Alanı
+    -- Sekme Butonları Listesi
     local tabList = Instance.new("ScrollingFrame")
-    tabList.Size = UDim2.new(1, -20, 1, -120)
-    tabList.Position = UDim2.new(0, 10, 0, 60)
+    tabList.Size = UDim2.new(1, -20, 1, -130)
+    tabList.Position = UDim2.new(0, 10, 0, 65)
     tabList.BackgroundTransparency = 1
     tabList.ScrollBarThickness = 0
     tabList.Parent = sidebar
@@ -250,31 +253,57 @@ function ArowaUI:CreateWindow(hubTitle, gameTitle)
     local tabLayout = Instance.new("UIListLayout")
     tabLayout.Parent = tabList
     tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    tabLayout.Padding = UDim.new(0, 5)
+    tabLayout.Padding = UDim.new(0, 6)
 
-    -- Oyuncu Profili
+    -- Oyuncu Profil Kartı (Avatar + Nick)
     local profileCard = Instance.new("Frame")
-    profileCard.Size = UDim2.new(1, -20, 0, 45)
-    profileCard.Position = UDim2.new(0, 10, 1, -55)
+    profileCard.Size = UDim2.new(1, -20, 0, 50)
+    profileCard.Position = UDim2.new(0, 10, 1, -60)
     profileCard.BackgroundColor3 = Color3.fromRGB(22, 25, 34)
     profileCard.Parent = sidebar
     Instance.new("UICorner", profileCard).CornerRadius = UDim.new(0, 8)
 
+    local avatarImg = Instance.new("ImageLabel")
+    avatarImg.Size = UDim2.new(0, 36, 0, 36)
+    avatarImg.Position = UDim2.new(0, 7, 0.5, -18)
+    avatarImg.BackgroundTransparency = 1
+    avatarImg.Parent = profileCard
+    Instance.new("UICorner", avatarImg).CornerRadius = UDim.new(1, 0)
+
+    -- Avatar Resmini Yükle
+    task.spawn(function()
+        local content, isLoaded = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+        if isLoaded then
+            avatarImg.Image = content
+        end
+    end)
+
     local pName = Instance.new("TextLabel")
-    pName.Size = UDim2.new(1, -10, 0, 20)
-    pName.Position = UDim2.new(0, 10, 0, 12)
+    pName.Size = UDim2.new(1, -55, 0, 18)
+    pName.Position = UDim2.new(0, 48, 0, 8)
     pName.BackgroundTransparency = 1
-    pName.Text = LocalPlayer.Name
+    pName.Text = LocalPlayer.DisplayName
     pName.TextColor3 = Color3.fromRGB(255, 255, 255)
     pName.TextSize = 12
     pName.Font = Enum.Font.GothamBold
     pName.TextXAlignment = Enum.TextXAlignment.Left
     pName.Parent = profileCard
 
+    local pUser = Instance.new("TextLabel")
+    pUser.Size = UDim2.new(1, -55, 0, 15)
+    pUser.Position = UDim2.new(0, 48, 0, 26)
+    pUser.BackgroundTransparency = 1
+    pUser.Text = "@" .. LocalPlayer.Name
+    pUser.TextColor3 = Color3.fromRGB(120, 125, 140)
+    pUser.TextSize = 10
+    pUser.Font = Enum.Font.Gotham
+    pUser.TextXAlignment = Enum.TextXAlignment.Left
+    pUser.Parent = profileCard
+
     -- Sağ İçerik Alanı
     local contentArea = Instance.new("Frame")
-    contentArea.Size = UDim2.new(1, -180, 1, -20)
-    contentArea.Position = UDim2.new(0, 175, 0, 10)
+    contentArea.Size = UDim2.new(1, -195, 1, -20)
+    contentArea.Position = UDim2.new(0, 188, 0, 10)
     contentArea.BackgroundTransparency = 1
     contentArea.Parent = mainFrame
 
@@ -285,10 +314,10 @@ function ArowaUI:CreateWindow(hubTitle, gameTitle)
         local Tab = {}
 
         local tabBtn = Instance.new("TextButton")
-        tabBtn.Size = UDim2.new(1, 0, 0, 32)
-        tabBtn.BackgroundColor3 = Color3.fromRGB(22, 25, 34)
+        tabBtn.Size = UDim2.new(1, 0, 0, 35)
+        tabBtn.BackgroundColor3 = Color3.fromRGB(24, 27, 36)
         tabBtn.BackgroundTransparency = 1
-        tabBtn.Text = "  " .. tabName
+        tabBtn.Text = "   " .. tabName
         tabBtn.TextColor3 = Color3.fromRGB(150, 155, 170)
         tabBtn.Font = Enum.Font.Gotham
         tabBtn.TextSize = 13
@@ -334,7 +363,7 @@ function ArowaUI:CreateWindow(hubTitle, gameTitle)
             local state = default or false
 
             local toggleFrame = Instance.new("Frame")
-            toggleFrame.Size = UDim2.new(1, 0, 0, 42)
+            toggleFrame.Size = UDim2.new(1, -5, 0, 42)
             toggleFrame.BackgroundColor3 = Color3.fromRGB(24, 27, 36)
             toggleFrame.Parent = tabContent
             Instance.new("UICorner", toggleFrame).CornerRadius = UDim.new(0, 8)
@@ -353,7 +382,7 @@ function ArowaUI:CreateWindow(hubTitle, gameTitle)
             local switch = Instance.new("TextButton")
             switch.Size = UDim2.new(0, 45, 0, 22)
             switch.Position = UDim2.new(1, -55, 0.5, -11)
-            switch.BackgroundColor3 = state and Color3.fromRGB(0, 200, 115) or Color3.fromRGB(40, 45, 60)
+            switch.BackgroundColor3 = state and Color3.fromRGB(0, 200, 115) or Color3.fromRGB(45, 50, 65)
             switch.Text = ""
             switch.Parent = toggleFrame
             Instance.new("UICorner", switch).CornerRadius = UDim.new(1, 0)
@@ -367,9 +396,26 @@ function ArowaUI:CreateWindow(hubTitle, gameTitle)
 
             switch.MouseButton1Click:Connect(function()
                 state = not state
-                switch.BackgroundColor3 = state and Color3.fromRGB(0, 200, 115) or Color3.fromRGB(40, 45, 60)
+                switch.BackgroundColor3 = state and Color3.fromRGB(0, 200, 115) or Color3.fromRGB(45, 50, 65)
                 knob.Position = state and UDim2.new(1, -20, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)
                 if callback then callback(state) end
+            end)
+        end
+
+        -- Buton Ekleme
+        function Tab:AddButton(text, callback)
+            local btnFrame = Instance.new("TextButton")
+            btnFrame.Size = UDim2.new(1, -5, 0, 40)
+            btnFrame.BackgroundColor3 = Color3.fromRGB(28, 32, 44)
+            btnFrame.Text = text
+            btnFrame.TextColor3 = Color3.fromRGB(255, 255, 255)
+            btnFrame.Font = Enum.Font.GothamBold
+            btnFrame.TextSize = 13
+            btnFrame.Parent = tabContent
+            Instance.new("UICorner", btnFrame).CornerRadius = UDim.new(0, 8)
+
+            btnFrame.MouseButton1Click:Connect(function()
+                if callback then callback() end
             end)
         end
 
