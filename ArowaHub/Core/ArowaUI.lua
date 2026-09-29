@@ -38,6 +38,164 @@ local function makeDraggable(frame, handle)
     end)
 end
 
+-- 1. Yükleme Ekranı
+function ArowaUI:ShowLoading(titleText, callback)
+    local sg = Instance.new("ScreenGui")
+    sg.Name = "ArowaLoadingUI"
+    sg.Parent = CoreGui
+    sg.ResetOnSpawn = false
+
+    local bg = Instance.new("Frame")
+    bg.Size = UDim2.new(1, 0, 1, 0)
+    bg.BackgroundColor3 = Color3.fromRGB(15, 17, 23)
+    bg.BackgroundTransparency = 0.2
+    bg.Parent = sg
+
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(0, 320, 0, 180)
+    card.Position = UDim2.new(0.5, -160, 0.5, -90)
+    card.BackgroundColor3 = Color3.fromRGB(24, 26, 34)
+    card.Parent = bg
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 14)
+    Instance.new("UIStroke", card).Color = Color3.fromRGB(45, 48, 64)
+
+    local logo = Instance.new("TextLabel")
+    logo.Size = UDim2.new(1, 0, 0, 50)
+    logo.Position = UDim2.new(0, 0, 0, 25)
+    logo.BackgroundTransparency = 1
+    logo.Text = "AROWA HUB"
+    logo.TextColor3 = Color3.fromRGB(0, 255, 136)
+    logo.TextSize = 24
+    logo.Font = Enum.Font.GothamBold
+    logo.Parent = card
+
+    local subText = Instance.new("TextLabel")
+    subText.Size = UDim2.new(1, 0, 0, 20)
+    subText.Position = UDim2.new(0, 0, 0, 75)
+    subText.BackgroundTransparency = 1
+    subText.Text = titleText or "Yükleniyor..."
+    subText.TextColor3 = Color3.fromRGB(180, 185, 200)
+    subText.TextSize = 13
+    subText.Font = Enum.Font.Gotham
+    subText.Parent = card
+
+    local spinner = Instance.new("Frame")
+    spinner.Size = UDim2.new(0, 30, 0, 30)
+    spinner.Position = UDim2.new(0.5, -15, 0, 115)
+    spinner.BackgroundTransparency = 1
+    spinner.Parent = card
+
+    local spinnerCircle = Instance.new("UIStroke", spinner)
+    spinnerCircle.Color = Color3.fromRGB(0, 255, 136)
+    spinnerCircle.Thickness = 3
+
+    task.spawn(function()
+        while sg.Parent do
+            spinner.Rotation = spinner.Rotation + 10
+            task.wait(0.01)
+        end
+    end)
+
+    task.wait(1.5)
+    sg:Destroy()
+    if callback then callback() end
+end
+
+-- 2. Key Sistemi Penceresi (Main.lua'nın Aradığı Metod)
+function ArowaUI:CreateKeyWindow(title, lootUrl, onVerify)
+    local sg = Instance.new("ScreenGui")
+    sg.Name = "ArowaKeyUI"
+    sg.Parent = CoreGui
+    sg.ResetOnSpawn = false
+
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, 420, 0, 280)
+    mainFrame.Position = UDim2.new(0.5, -210, 0.5, -140)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(20, 22, 30)
+    mainFrame.Parent = sg
+    Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14)
+    Instance.new("UIStroke", mainFrame).Color = Color3.fromRGB(40, 44, 60)
+
+    makeDraggable(mainFrame)
+
+    local header = Instance.new("TextLabel")
+    header.Size = UDim2.new(1, 0, 0, 50)
+    header.BackgroundTransparency = 1
+    header.Text = title .. " - KEY SYSTEM"
+    header.TextColor3 = Color3.fromRGB(255, 255, 255)
+    header.TextSize = 18
+    header.Font = Enum.Font.GothamBold
+    header.Parent = mainFrame
+
+    local keyInput = Instance.new("TextBox")
+    keyInput.Size = UDim2.new(0.85, 0, 0, 45)
+    keyInput.Position = UDim2.new(0.075, 0, 0, 80)
+    keyInput.BackgroundColor3 = Color3.fromRGB(28, 31, 42)
+    keyInput.PlaceholderText = "Enter Key Here..."
+    keyInput.Text = ""
+    keyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+    keyInput.TextSize = 14
+    keyInput.Font = Enum.Font.Gotham
+    keyInput.Parent = mainFrame
+    Instance.new("UICorner", keyInput).CornerRadius = UDim.new(0, 8)
+    Instance.new("UIStroke", keyInput).Color = Color3.fromRGB(50, 55, 75)
+
+    local verifyBtn = Instance.new("TextButton")
+    verifyBtn.Size = UDim2.new(0.4, 0, 0, 42)
+    verifyBtn.Position = UDim2.new(0.075, 0, 0, 145)
+    verifyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 115)
+    verifyBtn.Text = "Verify Key"
+    verifyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    verifyBtn.Font = Enum.Font.GothamBold
+    verifyBtn.TextSize = 14
+    verifyBtn.Parent = mainFrame
+    Instance.new("UICorner", verifyBtn).CornerRadius = UDim.new(0, 8)
+
+    local getKeyBtn = Instance.new("TextButton")
+    getKeyBtn.Size = UDim2.new(0.4, 0, 0, 42)
+    getKeyBtn.Position = UDim2.new(0.525, 0, 0, 145)
+    getKeyBtn.BackgroundColor3 = Color3.fromRGB(45, 50, 70)
+    getKeyBtn.Text = "Get Key"
+    getKeyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    getKeyBtn.Font = Enum.Font.GothamBold
+    getKeyBtn.TextSize = 14
+    getKeyBtn.Parent = mainFrame
+    Instance.new("UICorner", getKeyBtn).CornerRadius = UDim.new(0, 8)
+
+    local statusLabel = Instance.new("TextLabel")
+    statusLabel.Size = UDim2.new(1, 0, 0, 30)
+    statusLabel.Position = UDim2.new(0, 0, 0, 215)
+    statusLabel.BackgroundTransparency = 1
+    statusLabel.Text = ""
+    statusLabel.TextColor3 = Color3.fromRGB(255, 85, 85)
+    statusLabel.Font = Enum.Font.Gotham
+    statusLabel.TextSize = 13
+    statusLabel.Parent = mainFrame
+
+    getKeyBtn.MouseButton1Click:Connect(function()
+        if setclipboard then
+            setclipboard(lootUrl)
+            statusLabel.TextColor3 = Color3.fromRGB(0, 255, 136)
+            statusLabel.Text = "Link Copied to Clipboard!"
+        end
+    end)
+
+    verifyBtn.MouseButton1Click:Connect(function()
+        onVerify(keyInput.Text, function(success, message)
+            if success then
+                statusLabel.TextColor3 = Color3.fromRGB(0, 255, 136)
+                statusLabel.Text = message
+                task.wait(0.5)
+                sg:Destroy()
+            else
+                statusLabel.TextColor3 = Color3.fromRGB(255, 85, 85)
+                statusLabel.Text = message
+            end
+        end)
+    end)
+end
+
+-- 3. Ana Menü
 function ArowaUI:CreateWindow(hubTitle, gameTitle)
     local Window = {}
     
@@ -102,7 +260,7 @@ function ArowaUI:CreateWindow(hubTitle, gameTitle)
     tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
     tabLayout.Padding = UDim.new(0, 5)
 
-    -- Profil Kartı (Avatar Görseli Düzeltildi)
+    -- Profil Kartı (Avatar Görseli)
     local profileCard = Instance.new("Frame")
     profileCard.Size = UDim2.new(1, -16, 0, 48)
     profileCard.Position = UDim2.new(0, 8, 1, -56)
@@ -117,7 +275,7 @@ function ArowaUI:CreateWindow(hubTitle, gameTitle)
     avatarImg.Parent = profileCard
     Instance.new("UICorner", avatarImg).CornerRadius = UDim.new(1, 0)
 
-    -- Avatar Yükleme
+    -- Profil Fotosu Çekme
     task.spawn(function()
         local content, isLoaded = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
         if isLoaded then
