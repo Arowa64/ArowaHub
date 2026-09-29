@@ -1,97 +1,115 @@
-local UniversalModule = {}
+local RawURL = "https://raw.githubusercontent.com/Arowa64/ArowaHub/main/ArowaHub/"
+local timeStamp = "?v=" .. tostring(os.time())
+local ArowaUI = loadstring(game:HttpGet(RawURL .. "Core/ArowaUI.lua" .. timeStamp))()
 
-function UniversalModule.Init()
-    local Players = game:GetService("Players")
-    local CoreGui = game:GetService("CoreGui")
-    local LocalPlayer = Players.LocalPlayer
-    local RawURL = "https://raw.githubusercontent.com/Arowa64/ArowaHub/main/ArowaHub/"
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TeleportService = game:GetService("TeleportService")
+local LocalPlayer = Players.LocalPlayer
 
-    -- Eski GUI varsa temizle
-    if CoreGui:FindFirstChild("ArowaMainHub") then
-        CoreGui.ArowaMainHub:Destroy()
-    end
+local Universal = {}
 
-    -- UI Motorunu Yükle
-    local ArowaUI = loadstring(game:HttpGet(RawURL .. "Core/ArowaUI.lua"))()
-    local window = ArowaUI:CreateWindow("ArowaHub", "Universal ESP Mode")
+function Universal.Init()
+    local Window = ArowaUI:CreateWindow("ArowaHub", "Universal Edition")
 
     ---------------------------------------------------------
-    -- ESP DEĞİŞKENLERİ VE MANTIĞI
+    -- TAB 1: PLAYER / MOVEMENT
     ---------------------------------------------------------
-    local ESP_Settings = {
-        MasterToggle = false,
-        Chams = false
-    }
+    local PlayerTab = Window:CreateTab("Player", "⚡")
 
-    local function updateESP(player)
-        if player == LocalPlayer then return end
+    PlayerTab:AddSlider("WalkSpeed", 16, 200, 16, function(val)
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.Humanoid.WalkSpeed = val
+        end
+    end)
 
-        local function applyChams(character)
-            if not character then return end
-            local highlight = character:FindFirstChild("ArowaHighlight")
+    PlayerTab:AddSlider("JumpPower", 50, 300, 50, function(val)
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.Humanoid.UseJumpPower = true
+            LocalPlayer.Character.Humanoid.JumpPower = val
+        end
+    end)
 
-            if ESP_Settings.MasterToggle and ESP_Settings.Chams then
-                if not highlight then
-                    highlight = Instance.new("Highlight")
-                    highlight.Name = "ArowaHighlight"
-                    highlight.FillColor = Color3.fromRGB(0, 255, 136)
-                    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-                    highlight.FillTransparency = 0.4
-                    highlight.OutlineTransparency = 0
-                    highlight.Parent = character
+    -- Infinite Jump
+    local infJumpEnabled = false
+    PlayerTab:AddToggle("Infinite Jump", false, function(state)
+        infJumpEnabled = state
+    end)
+
+    UserInputService.JumpRequest:Connect(function()
+        if infJumpEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end)
+
+    -- Noclip
+    local noclipEnabled = false
+    PlayerTab:AddToggle("Noclip", false, function(state)
+        noclipEnabled = state
+    end)
+
+    RunService.Stepped:Connect(function()
+        if noclipEnabled and LocalPlayer.Character then
+            for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
                 end
-            else
-                if highlight then highlight:Destroy() end
             end
         end
-
-        if player.Character then applyChams(player.Character) end
-        player.CharacterAdded:Connect(applyChams)
-    end
-
-    local function refreshAllESP()
-        for _, p in ipairs(Players:GetPlayers()) do
-            updateESP(p)
-        end
-    end
-
-    Players.PlayerAdded:Connect(updateESP)
+    end)
 
     ---------------------------------------------------------
-    -- KATEGORİLER VE SEKMELER
+    -- TAB 2: ESP / VISUALS
     ---------------------------------------------------------
+    local ESPTab = Window:CreateTab("ESP Visuals", "👁")
 
-    -- 1. KATEGORİ: ESP Ayarları
-    local EspTab = window:CreateTab("ESP Ayarları")
-
-    EspTab:AddToggle("Master Toggle (Ana Şalter)", false, function(val)
-        ESP_Settings.MasterToggle = val
-        refreshAllESP()
-    end)
-
-    EspTab:AddToggle("Chams (Highlight ESP)", false, function(val)
-        ESP_Settings.Chams = val
-        refreshAllESP()
-    end)
-
-
-    -- 2. KATEGORİ: Hub Ayarları
-    local SettingsTab = window:CreateTab("Hub Ayarları")
-
-    SettingsTab:AddButton("Arayüzü Kapat (Destroy UI)", function()
-        if CoreGui:FindFirstChild("ArowaMainHub") then
-            CoreGui.ArowaMainHub:Destroy()
+    local highlights = {}
+    ESPTab:AddToggle("Chams (Highlight)", false, function(state)
+        if state then
+            for _, p in pairs(Players:GetPlayers()) do
+                if p ~= LocalPlayer and p.Character then
+                    local hl = Instance.new("Highlight")
+                    hl.Name = "ArowaChams"
+                    hl.FillColor = Color3.fromRGB(0, 255, 136)
+                    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    hl.FillTransparency = 0.5
+                    hl.Parent = p.Character
+                    highlights[p] = hl
+                end
+            end
+        else
+            for _, hl in pairs(highlights) do
+                if hl then hl:Destroy() end
+            end
+            highlights = {}
         end
     end)
 
-    SettingsTab:AddButton("Yeniden Yükle (Re-execute)", function()
-        if CoreGui:FindFirstChild("ArowaMainHub") then
-            CoreGui.ArowaMainHub:Destroy()
-        end
-        loadstring(game:HttpGet(RawURL .. "Main.lua?v=" .. tostring(os.time())))()
+    ---------------------------------------------------------
+    -- TAB 3: HUB SETTINGS
+    ---------------------------------------------------------
+    local SettingsTab = Window:CreateTab("Hub Settings")
+
+    SettingsTab:AddButton("Server Hop", function()
+        TeleportService:Teleport(game.PlaceId, LocalPlayer)
     end)
 
-    print("[Arowa Hub] Universal Module and UI successfully connected!")
+    SettingsTab:AddButton("Rejoin Game", function()
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+    end)
+
+    SettingsTab:AddButton("Copy Discord Link", function()
+        if setclipboard then
+            setclipboard("https://discord.gg/grogu")
+        end
+    end)
+
+    SettingsTab:AddButton("Unload Script", function()
+        if game:GetService("CoreGui"):FindFirstChild("ArowaMainHub") then
+            game:GetService("CoreGui").ArowaMainHub:Destroy()
+        end
+    end)
 end
 
-return UniversalModule
+return Universal
