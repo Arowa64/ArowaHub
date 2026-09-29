@@ -6,14 +6,18 @@ function UniversalModule.Init()
     local LocalPlayer = Players.LocalPlayer
     local RawURL = "https://raw.githubusercontent.com/Arowa64/ArowaHub/main/ArowaHub/"
 
-    if CoreGui:FindFirstChild("ArowaUniversalGUI") then
-        CoreGui.ArowaUniversalGUI:Destroy()
+    -- Eski GUI varsa temizle
+    if CoreGui:FindFirstChild("ArowaMainHub") then
+        CoreGui.ArowaMainHub:Destroy()
     end
 
+    -- UI Motorunu Yükle
     local ArowaUI = loadstring(game:HttpGet(RawURL .. "Core/ArowaUI.lua"))()
-    local window = ArowaUI:CreateWindow("ArowaHub", "Universal ESP")
+    local window = ArowaUI:CreateWindow("ArowaHub", "Universal ESP Mode")
 
-    -- ESP Ayarları
+    ---------------------------------------------------------
+    -- ESP DEĞİŞKENLERİ VE MANTIĞI
+    ---------------------------------------------------------
     local ESP_Settings = {
         MasterToggle = false,
         Chams = false
@@ -53,18 +57,41 @@ function UniversalModule.Init()
 
     Players.PlayerAdded:Connect(updateESP)
 
-    -- SEKMELER VE DÜĞMELER
-    local MainTab = window:CreateTab("ESP Görselleri")
-    
-    MainTab:AddToggle("ESP Ana Şalter (Master Toggle)", false, function(val)
+    ---------------------------------------------------------
+    -- KATEGORİLER VE SEKMELER
+    ---------------------------------------------------------
+
+    -- 1. KATEGORİ: ESP Ayarları
+    local EspTab = window:CreateTab("ESP Ayarları")
+
+    EspTab:AddToggle("Master Toggle (Ana Şalter)", false, function(val)
         ESP_Settings.MasterToggle = val
         refreshAllESP()
     end)
 
-    MainTab:AddToggle("Chams (Highlight ESP)", false, function(val)
+    EspTab:AddToggle("Chams (Highlight ESP)", false, function(val)
         ESP_Settings.Chams = val
         refreshAllESP()
     end)
+
+
+    -- 2. KATEGORİ: Hub Ayarları
+    local SettingsTab = window:CreateTab("Hub Ayarları")
+
+    SettingsTab:AddButton("Arayüzü Kapat (Destroy UI)", function()
+        if CoreGui:FindFirstChild("ArowaMainHub") then
+            CoreGui.ArowaMainHub:Destroy()
+        end
+    end)
+
+    SettingsTab:AddButton("Yeniden Yükle (Re-execute)", function()
+        if CoreGui:FindFirstChild("ArowaMainHub") then
+            CoreGui.ArowaMainHub:Destroy()
+        end
+        loadstring(game:HttpGet(RawURL .. "Main.lua?v=" .. tostring(os.time())))()
+    end)
+
+    print("[Arowa Hub] Universal Module and UI successfully connected!")
 end
 
 return UniversalModule
