@@ -9,8 +9,7 @@ local playerLocale = LocalizationService.RobloxLocaleId:lower()
 local isTurkish = string.find(playerLocale, "tr") ~= nil
 
 -- LootLabs Linkin
-local LootLabs_BaseUrl = "https://lootdest.org/s?F1PcGPsi"
-local UserPersonalUrl = LootLabs_BaseUrl .. "&uid=" .. tostring(LocalPlayer.UserId)
+local UserPersonalUrl = "https://lootdest.org/s?F1PcGPsi"
 
 -- UI Motorunu Yükle
 local ArowaUI = loadstring(game:HttpGet(RawURL .. "Core/ArowaUI.lua"))()
