@@ -1,47 +1,29 @@
 local RawURL = "https://raw.githubusercontent.com/Arowa64/ArowaHub/main/ArowaHub/"
 
 local Players = game:GetService("Players")
-local LocalizationService = game:GetService("LocalizationService")
 local LocalPlayer = Players.LocalPlayer
 
--- Kullanıcı Dili Tespiti
-local playerLocale = LocalizationService.RobloxLocaleId:lower()
-local isTurkish = string.find(playerLocale, "tr") ~= nil
-
--- Yeni LootLabs Linkin
 local UserPersonalUrl = "https://loot-link.com/s?z9sNoHrz"
-
--- SABİT KEY
 local SABIT_KEY = "123"
 
--- UI Motorunu Yükle
 local ArowaUI = loadstring(game:HttpGet(RawURL .. "Core/ArowaUI.lua"))()
 
--- Key Doğrulama Servisi
-local function VerifyKey(userKeyInput, callback)
-    task.spawn(function()
-        local formattedInput = string.gsub(userKeyInput or "", "%s+", "")
-        
-        if formattedInput == SABIT_KEY then
-            local successMsg = isTurkish and "Key Başarıyla Doğrulandı!" or "Key Successfully Verified!"
-            callback(true, successMsg)
-        else
-            local errorMsg = isTurkish and "Geçersiz Key!" or "Invalid Key!"
-            callback(false, errorMsg)
-        end
-    end)
-end
-
--- UI Ekranını Aç
+-- Key Penceresi
 ArowaUI:CreateKeyWindow("AROWA HUB", UserPersonalUrl, function(enteredKey, respond)
-    VerifyKey(enteredKey, function(success, message)
-        respond(success, message)
+    local formattedInput = string.gsub(enteredKey or "", "%s+", "")
+    
+    if formattedInput == SABIT_KEY then
+        respond(true, "Key Validated!")
         
-        if success then
-            print(isTurkish and "[Arowa Hub] Giriş Başarılı! Oyun Yükleniyor..." or "[Arowa Hub] Login Successful! Loading Game...")
-            
+        -- Dönen Animasyonlu Yükleme Ekranı
+        ArowaUI:ShowLoading("Loading Arowa Hub...", function()
             local Universal = loadstring(game:HttpGet(RawURL .. "Games/Universal_Module.lua"))()
             Universal.Init()
-        end
-    end)
+            
+            -- Görseldeki Tarzda Ana Hub'ı Aç
+            ArowaUI:CreateWindow("ArowaHub", "Universal Mode")
+        end)
+    else
+        respond(false, "Invalid Key!")
+    end
 end)
